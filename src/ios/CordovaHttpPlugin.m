@@ -13,6 +13,7 @@
 
 @implementation CordovaHttpPlugin {
     AFSecurityPolicy *securityPolicy;
+    NSInteger requestSerializerType;
 }
 
 - (void)pluginInitialize {
@@ -20,7 +21,14 @@
 }
 
 - (void)setRequestHeaders:(NSDictionary*)headers forManager:(AFHTTPSessionManager*)manager {
-    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    
+    if (requestSerializerType == 1) {//AFJSONRequestSerializer
+        manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    }else if(requestSerializerType == 2){//AFPropertyListRequestSerializer
+        manager.requestSerializer = [AFPropertyListRequestSerializer serializer];
+    }else{//default AFHTTPRequestSerializer
+        manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    }
     [headers enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         [manager.requestSerializer setValue:obj forHTTPHeaderField:key];
     }];
@@ -62,6 +70,14 @@
     
     securityPolicy.validatesDomainName = validate;
     
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)requestSerializerType:(CDVInvokedUrlCommand*)command {
+    CDVPluginResult* pluginResult = nil;
+    requestSerializerType = [[command.arguments objectAtIndex:0] integerValue];
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
