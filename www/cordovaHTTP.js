@@ -46,6 +46,8 @@ var http = {
     validateDomainName: function(validate, success, failure) {
         return exec(success, failure, "CordovaHttpPlugin", "validateDomainName", [validate]);
     },
+    requestSerializerType: function (typeIdent, success, failure) {
+        return exec(success, failure, "CordovaHttpPlugin", "requestSerializerType", [type]);
     },
     post: function(url, params, headers, success, failure) {
         headers = mergeHeaders(this.headers, headers);
